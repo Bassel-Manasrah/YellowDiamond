@@ -1,0 +1,1 @@
+A mobile app that combines the familiar chat functionality of messaging apps like WhatsApp with a unique recommendation feature. Users can recommend movies, songs, books, and more to their friends, backed by AI.
