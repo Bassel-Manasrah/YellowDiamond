@@ -2,9 +2,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AuthInit from "./src/screens/AuthInit";
 import AuthVerify from "./src/screens/AuthVerify";
-import { View } from "react-native";
-import OTP from "./src/components/OTP";
 import Home from "./src/screens/Home";
+import Contacts from "./src/screens/Contacts";
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -17,6 +16,13 @@ export default function App() {
         <Screen name="authInit" component={AuthInit} />
         <Screen name="authVerify" component={AuthVerify} />
         <Screen name="home" component={Home} />
+        <Screen
+          name="contacts"
+          component={Contacts}
+          options={{
+            headerShown: true,
+          }}
+        />
       </Navigator>
     </NavigationContainer>
   );
