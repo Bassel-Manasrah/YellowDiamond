@@ -1,9 +1,11 @@
 import filterAsync from "./utils/filterAsync.js";
-import usersDao from "@yellowdiamond/usersdao";
+import userDao from "@yellowdiamond/usersdao";
 
 const registry = {
+  userDao: new userDao(process.env.USERS_DB_URI, process.env.USERS_DB_NAME),
+
   isRegisteredAsync: async (phoneNumber) => {
-    const user = await usersDao.getByPhoneNumberAsync(phoneNumber);
+    const user = await registry.userDao.getByPhoneNumberAsync(phoneNumber);
     return user ? true : false;
   },
 

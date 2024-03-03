@@ -1,12 +1,12 @@
 import { MongoClient } from "mongodb";
 
-const connectAsync = async () => {
+const connectAsync = async (uri, dbName) => {
   // connect to database
-  const client = new MongoClient("mongodb://localhost:27017");
+  const client = new MongoClient(uri);
   await client.connect();
 
   // fetch the collection
-  const collection = client.db("greatDB").collection("users");
+  const collection = client.db(dbName).collection("users");
 
   // define close function callback
   const closeAsync = async () => {

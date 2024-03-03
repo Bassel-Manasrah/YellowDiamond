@@ -1,11 +1,18 @@
 import connectAsync from "./connectAsync.js";
 import handleErrorsAsync from "./handleErrorsAsync.js";
 
-const userDao = {
-  addAsync: async ({ phoneNumber }) => {
+class userDao {
+  constructor(uri, dbName) {
+    this.uri = uri;
+    this.dbName = dbName;
+  }
+  async addAsync({ phoneNumber }) {
     return await handleErrorsAsync(async () => {
       // connect to database
-      const { collection, closeAsync } = await connectAsync();
+      const { collection, closeAsync } = await connectAsync(
+        this.uri,
+        this.dbName
+      );
 
       // insert the user in the database
       const { insertedId } = await collection.insertOne({ phoneNumber });
@@ -16,12 +23,14 @@ const userDao = {
       // return inserted user's id
       return insertedId;
     });
-  },
-
-  getByPhoneNumberAsync: async (phoneNumber) => {
+  }
+  async getByPhoneNumberAsync(phoneNumber) {
     return await handleErrorsAsync(async () => {
       // connect to the database
-      const { collection, closeAsync } = await connectAsync();
+      const { collection, closeAsync } = await connectAsync(
+        this.uri,
+        this.dbName
+      );
 
       // find the user with that phone number
       const user = await collection.findOne({ phoneNumber });
@@ -32,7 +41,7 @@ const userDao = {
       // return the user
       return user;
     });
-  },
-};
+  }
+}
 
 export default userDao;
