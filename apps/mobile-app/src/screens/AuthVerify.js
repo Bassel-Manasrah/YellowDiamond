@@ -36,9 +36,7 @@ export default function AuthVerify({ route, navigation }) {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Enter verification code</Text>
       <OTP onChange={setOtp} />
-      <View style={styles.spacer}>
-        <Toast />
-      </View>
+      <View style={styles.spacer}></View>
       <Button disabled={!canContinue} loading={loading} onPress={onPress}>
         Continue
       </Button>
