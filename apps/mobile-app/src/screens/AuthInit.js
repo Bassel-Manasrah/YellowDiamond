@@ -17,7 +17,7 @@ export default function AuthInit({ navigation }) {
 
     try {
       const response = await axios.post(
-        `http://${process.env.EXPO_PUBLIC_HOSTNAME}/sendOTP`,
+        `http://${process.env.EXPO_PUBLIC_AUTH_HOSTNAME}/sendOTP`,
         {
           phoneNumber: `${countryCode}${cleanedPhoneNumber}`,
         }

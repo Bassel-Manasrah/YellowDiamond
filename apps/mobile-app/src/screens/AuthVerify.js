@@ -15,7 +15,7 @@ export default function AuthVerify({ route, navigation }) {
 
   const onPress = async () => {
     setLoading(true);
-    const url = `http://${process.env.EXPO_PUBLIC_HOSTNAME}/verifyOTP`;
+    const url = `http://${process.env.EXPO_PUBLIC_AUTH_HOSTNAME}/verifyOTP`;
     const payload = {
       phoneNumber,
       otp,
