@@ -5,6 +5,7 @@ import AuthVerify from "./src/screens/AuthVerify";
 import Home from "./src/screens/Home";
 import Contacts from "./src/screens/Contacts";
 import useAppStateHandler from "./src/hooks/useAppStateHandler";
+import Chat from "./src/screens/Chat";
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ export default function App() {
               headerShown: true,
             }}
           />
+          <Screen name="chat" component={Chat} />
         </Navigator>
       </NavigationContainer>
     )
