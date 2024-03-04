@@ -11,6 +11,7 @@ export default function Contact({
   imgUri: propImgUri,
   name,
   registered = false,
+  onPress,
 }) {
   const defaultImgUri =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZiwJCHgq3aS6uqBsM9jXnZfzivlNkahN_zNz4ZOpETg&s";
@@ -23,7 +24,7 @@ export default function Contact({
   const statusMessage = registered ? "on app" : "off app";
 
   return (
-    <TouchableNativeFeedback disabled={!registered}>
+    <TouchableNativeFeedback disabled={!registered} onPress={onPress}>
       <View style={styles.container}>
         <Image source={{ uri: imgUri }} style={styles.img} />
         <Text style={styles.title} numberOfLines={1}>

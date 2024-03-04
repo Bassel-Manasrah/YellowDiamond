@@ -4,12 +4,16 @@ import useContacts from "../hooks/useContacts";
 import Contact from "../components/Contact";
 import axios from "axios";
 
-export default function Contacts() {
+export default function Contacts({ navigation }) {
   const { contacts, loading, setContacts } = useContacts("IL");
+
+  const onContactPress = ({ phoneNumber, name }) => {
+    navigation.navigate("chat", { phoneNumber, name });
+  };
 
   const fetchRegisteredContacts = async () => {
     const response = await axios.post(
-      `http://${process.env.EXPO_PUBLIC_HOSTNAME}/filterRegistered`,
+      `http://${process.env.EXPO_PUBLIC_REG_HOSTNAME}/filterRegistered`,
       contacts.map((contact) => contact.phoneNumber)
     );
 
@@ -36,7 +40,11 @@ export default function Contacts() {
           data={contacts}
           keyExtractor={(item) => item.phoneNumber}
           renderItem={({ item }) => (
-            <Contact name={item.name} registered={item.registered} />
+            <Contact
+              name={item.name}
+              registered={item.registered}
+              onPress={() => onContactPress(item)}
+            />
           )}
         />
       ) : (
