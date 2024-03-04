@@ -8,7 +8,7 @@ class RealTimeService {
 
     return new Promise((resolve, reject) => {
       this.#ws = new WebSocket(
-        `ws://${EXPO_PUBLIC_HOSTNAME}/${EXPO_PUBLIC_PHONE_NUMBER}`
+        `ws://${process.env.EXPO_PUBLIC_HOSTNAME}/${process.env.EXPO_PUBLIC_PHONE_NUMBER}`
       );
       this.#ws.onmessage = (e) => this.#receive(e.data);
       this.#ws.onopen = () => {
