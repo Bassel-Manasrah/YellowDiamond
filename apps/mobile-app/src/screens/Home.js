@@ -3,6 +3,7 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FAB from "../components/FAB";
+import { StatusBar } from "expo-status-bar";
 
 export default function Home({ navigation }) {
   const onFloatingButtonPress = () => {
@@ -15,6 +16,7 @@ export default function Home({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="royalblue" style="light" />
       <Text>Home</Text>
       <FAB
         color="#075eec"
