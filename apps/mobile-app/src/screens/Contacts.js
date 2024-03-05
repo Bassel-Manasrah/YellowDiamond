@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import useContacts from "../hooks/useContacts";
 import Contact from "../components/Contact";
 import axios from "axios";
+import { StatusBar } from "expo-status-bar";
+import SplashScreen from "./SplashScreen";
 
 export default function Contacts({ navigation }) {
   const { contacts, loading, setContacts } = useContacts("IL");
@@ -35,6 +37,7 @@ export default function Contacts({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="royalblue" style="light" />
       {!loading ? (
         <FlatList
           data={contacts}
@@ -48,7 +51,7 @@ export default function Contacts({ navigation }) {
           )}
         />
       ) : (
-        <Text>loading ...</Text>
+        <SplashScreen />
       )}
     </View>
   );
