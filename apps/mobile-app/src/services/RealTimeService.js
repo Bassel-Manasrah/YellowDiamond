@@ -1,3 +1,5 @@
+import { store } from "../utils/store";
+
 class RealTimeService {
   #subscribers = [];
   #ws;
@@ -6,9 +8,11 @@ class RealTimeService {
   async connectAsync() {
     if (this.#connected) return true;
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      const myPhoneNumber = await store.get("myPhoneNumber");
+
       this.#ws = new WebSocket(
-        `ws://${process.env.EXPO_PUBLIC_REALTIME_HOSTNAME}/${process.env.EXPO_PUBLIC_PHONE_NUMBER}`
+        `ws://${process.env.EXPO_PUBLIC_REALTIME_HOSTNAME}/${myPhoneNumber}`
       );
       this.#ws.onmessage = (e) => this.#receive(e.data);
       this.#ws.onopen = () => {

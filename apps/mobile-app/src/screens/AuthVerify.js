@@ -25,7 +25,7 @@ export default function AuthVerify({ route, navigation }) {
       .then(async (response) => {
         const { token } = response.data;
         await store.set("token", token);
-        navigation.navigate("home");
+        await store.set("myPhoneNumber", phoneNumber);
       })
       .catch((error) => {
         navigation.navigate("authInit");

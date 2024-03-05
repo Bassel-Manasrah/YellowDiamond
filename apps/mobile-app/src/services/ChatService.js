@@ -1,10 +1,16 @@
+import { store } from "../utils/store";
 import messageStorageService from "./MessageStorageService";
 import realTimeService from "./RealTimeService";
 
 class ChatService {
+  constructor() {}
+
   async sendMessageAsync(to, text) {
+    if (!this.myPhoneNumber)
+      this.myPhoneNumber = await store.get("myPhoneNumber");
+
     // construct the message object
-    message = { sender: "bassel", receiver: to, text };
+    message = { sender: this.myPhoneNumber, receiver: to, text };
 
     // add message to local messages storeage
     await messageStorageService.addMessageAsync(message);

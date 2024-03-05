@@ -7,12 +7,14 @@ import ChatHeader from "../components/ChatHeader";
 import { StatusBar } from "expo-status-bar";
 import chatService from "../services/ChatService";
 import uuid from "react-native-uuid";
+import { store } from "../utils/store";
 
 export default function Chat({ navigation, route }) {
   const { phoneNumber, name } = route.params;
 
   const [newMessageText, setNewMessageText] = useState("");
   const [messages, setMessages] = useState([]);
+  const [myPhoneNumber, setMyPhoneNumber] = useState(null);
   const flatListRef = useRef();
 
   const fetchMessages = async () => {
@@ -22,8 +24,13 @@ export default function Chat({ navigation, route }) {
     setMessages(fetched);
   };
 
+  const fetchMyPhoneNumber = async () => {
+    setMyPhoneNumber(await store.get("myPhoneNumber"));
+  };
+
   useEffect(() => {
     fetchMessages();
+    fetchMyPhoneNumber();
     chatService.onNewMessage(phoneNumber, (message) => {
       setMessages((messages) => [...messages, { ...message, id: uuid.v4() }]);
     });
@@ -35,8 +42,8 @@ export default function Chat({ navigation, route }) {
       ...messages,
       {
         text: newMessageText,
-        sender: process.env.EXPO_PUBLIC_PHONE_NUMBER,
-        receiver: phoneNumber,
+        sender: myPhoneNumber,
+        reeiver: phoneNumber,
         id: uuid.v4(),
       },
     ]);
