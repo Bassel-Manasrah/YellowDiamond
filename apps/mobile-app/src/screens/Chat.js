@@ -62,7 +62,9 @@ export default function Chat({ navigation, route }) {
       />
       <FlatList
         data={messages}
-        renderItem={({ item }) => <Message message={item} />}
+        renderItem={({ item }) => (
+          <Message text={item.text} mine={item.sender === myPhoneNumber} />
+        )}
         ref={flatListRef}
         onContentSizeChange={() =>
           flatListRef.current.scrollToEnd({ animated: true })

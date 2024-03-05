@@ -1,12 +1,12 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
 
-export default function Message({ message }) {
+export default function Message({ text, mine }) {
   // define the container style and text style
   const containerStyle = [styles.container];
   const textStyle = [];
 
-  if (message.sender == process.env.EXPO_PUBLIC_PHONE_NUMBER) {
+  if (mine) {
     containerStyle.push(styles.myMessageContainer);
     textStyle.push(styles.myMessageText);
   } else {
@@ -15,7 +15,7 @@ export default function Message({ message }) {
 
   return (
     <View style={containerStyle}>
-      <Text style={textStyle}>{message.text}</Text>
+      <Text style={textStyle}>{text}</Text>
     </View>
   );
 }
