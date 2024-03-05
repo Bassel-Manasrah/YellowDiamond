@@ -34,6 +34,14 @@ export default function App() {
     return <SplashScreen />;
   }
 
+  const commonScreenOptions = {
+    headerShown: true,
+    headerStyle: {
+      backgroundColor: "royalblue",
+    },
+    headerTintColor: "white",
+  };
+
   const authScreens = (
     <>
       <Screen name="authInit" component={AuthInit} />
@@ -43,12 +51,20 @@ export default function App() {
 
   const mainScreens = ready ? (
     <>
-      <Screen name="home" component={Home} />
+      <Screen
+        name="home"
+        component={Home}
+        options={{
+          title: "Chats",
+          ...commonScreenOptions,
+        }}
+      />
       <Screen
         name="contacts"
         component={Contacts}
         options={{
-          headerShown: true,
+          title: "Contacts",
+          ...commonScreenOptions,
         }}
       />
       <Screen name="chat" component={Chat} />
