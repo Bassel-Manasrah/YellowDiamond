@@ -19,10 +19,12 @@ router.post("/sendOTP", (req, res) => {
   }
 });
 
-router.post("/verifyOTP", async (req, res) => {
+router.post("/register", async (req, res) => {
   const phoneNumber = req.body.phoneNumber;
   const otp = req.body.otp;
-  const { verified, token } = await auth.verifyOTP(phoneNumber, otp);
+  const pushToken = req.body.pushToken;
+
+  const { verified, token } = await auth.register(phoneNumber, otp, pushToken);
   verified ? res.status(200).send({ token }) : res.sendStatus(401);
 });
 

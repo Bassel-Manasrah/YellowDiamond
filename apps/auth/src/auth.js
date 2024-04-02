@@ -2,7 +2,7 @@ import { get, set } from "./db.js";
 import sendSMS from "./utils/sendSMS.js";
 import generateOTP from "./utils/generateOTP.js";
 import generateToken from "./utils/generateToken.js";
-import userDao from "@yellowdiamond/usersdao";
+import userDao from "./utils/usersDao/index.js";
 
 class Auth {
   constructor() {
@@ -27,14 +27,14 @@ class Auth {
     set(phoneNumber, otp);
   }
 
-  async verifyOTP(phoneNumber, otp) {
+  async register(phoneNumber, otp, pushToken) {
     const realOtp = await get(phoneNumber);
 
     const verified = realOtp === otp;
     let token = verified ? generateToken({ phoneNumber }) : null;
 
     if (verified) {
-      await this.userDao.addAsync({ phoneNumber });
+      await this.userDao.addAsync({ phoneNumber, pushToken });
     }
 
     return { verified, token };

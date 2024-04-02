@@ -5,8 +5,7 @@ services:
 
   realtime:
     build:
-      context: .
-      dockerfile: ./apps/real-time-server/Dockerfile
+      context: ./apps/real-time-server
     ports:
       - "3000:3000"
     environment:
@@ -16,8 +15,7 @@ services:
 
   registry:
     build:
-      context: .
-      dockerfile: ./apps/registry/Dockerfile
+      context: ./apps/registry/
     ports:
       - "4000:4000"
     environment:
@@ -27,8 +25,7 @@ services:
 
   auth:
     build:
-      context: .
-      dockerfile: ./apps/auth/Dockerfile
+      context: ./apps/auth
     ports:
       - "5000:5000"
     environment:

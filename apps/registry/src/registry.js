@@ -1,5 +1,5 @@
 import filterAsync from "./utils/filterAsync.js";
-import userDao from "@yellowdiamond/usersdao";
+import userDao from "./utils/usersDao/index.js";
 
 const registry = {
   userDao: new userDao(process.env.USERS_DB_URI, process.env.USERS_DB_NAME),
