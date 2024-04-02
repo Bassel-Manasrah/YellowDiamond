@@ -14,22 +14,10 @@ export default function AuthVerify({ route, navigation }) {
   const { phoneNumber } = route.params;
 
   const onPress = async () => {
-    setLoading(true);
-    const url = `http://${process.env.EXPO_PUBLIC_AUTH_HOSTNAME}/verifyOTP`;
-    const payload = {
+    navigation.navigate("registerPushNotification", {
       phoneNumber,
       otp,
-    };
-    axios
-      .post(url, payload)
-      .then(async (response) => {
-        const { token } = response.data;
-        await store.set("token", token);
-        await store.set("myPhoneNumber", phoneNumber);
-      })
-      .catch((error) => {
-        navigation.navigate("authInit");
-      });
+    });
   };
 
   return (

@@ -9,6 +9,7 @@ import Chat from "./src/screens/Chat";
 import { store } from "./src/utils/store";
 import { useEffect, useState } from "react";
 import SplashScreen from "./src/screens/SplashScreen";
+import RegisterPushNotifications from "./src/screens/RegisterPushNotifications";
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -46,6 +47,10 @@ export default function App() {
     <>
       <Screen name="authInit" component={AuthInit} />
       <Screen name="authVerify" component={AuthVerify} />
+      <Screen
+        name="registerPushNotification"
+        component={RegisterPushNotifications}
+      />
     </>
   );
 
