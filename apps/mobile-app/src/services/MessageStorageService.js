@@ -1,98 +1,100 @@
-import * as SQLite from "expo-sqlite";
+import * as SQLite from "expo-sqlite/next";
 
 class MessageStorageService {
-  #db = null;
-  #opened = false;
-
-  async connectAsync() {
-    this.#db = SQLite.openDatabase("yellowDiamond.#db");
-    console.log("messageStorageService: connect");
+  constructor() {
+    this.db = null;
+    this.newMessageSubs = [];
+    this.readStatusSubs = [];
   }
 
-  #createTableIfNotExist = () => {
-    this.#db.transaction((tx) => {
-      const createSql =
-        "CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, sender TEXT, receiver TEXT, text TEXT)";
-      tx.executeSql(createSql);
-    });
-  };
-
-  async getMessagesAsync() {
-    this.#createTableIfNotExist();
-
-    return new Promise((resolve, reject) => {
-      const getSql = "SELECT * FROM messages";
-
-      const callback = (tx, { rows }) => {
-        resolve(rows._array);
-      };
-
-      const errorCallback = (tx, error) => {
-        console.log(error);
-        reject(error);
-      };
-
-      this.#db.transaction((tx) => {
-        tx.executeSql(getSql, [], callback, errorCallback);
-      });
-    });
-  }
-
-  async getMessagesByPhoneNumberAsync(phoneNumber) {
-    console.log("messageStorageService: getMessages");
-    this.#createTableIfNotExist();
-
-    return new Promise((resolve, reject) => {
-      const getSql = "SELECT * FROM messages WHERE sender = ? OR receiver = ?";
-
-      const callback = (tx, { rows }) => {
-        resolve(rows._array);
-      };
-
-      const errorCallback = (tx, error) => {
-        console.log(error);
-        reject(error);
-      };
-
-      this.#db.transaction((tx) => {
-        tx.executeSql(
-          getSql,
-          [phoneNumber, phoneNumber],
-          callback,
-          errorCallback
-        );
-      });
-    });
-  }
-
-  async addMessageAsync({ sender, receiver, text }) {
-    this.#createTableIfNotExist();
-
-    return new Promise((resolve, reject) => {
-      const addSql =
-        "INSERT INTO messages (sender, receiver, text) VALUES (?, ?, ?)";
-
-      const callback = (tx, { insertId }) => {
-        resolve(insertId);
-      };
-
-      const errorCallback = (tx, error) => {
-        reject(null);
-      };
-
-      this.#db.transaction((tx) => {
-        tx.executeSql(
-          addSql,
-          [sender, receiver, text],
-          callback,
-          errorCallback
-        );
-      });
-    });
+  async openAsync() {
+    this.db = await SQLite.openDatabaseAsync("messages");
+    await this.db.execAsync(
+      "CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, phoneNumber TEXT, isMine INTEGER, isRead INTEGER, content TEXT)"
+    );
+    console.log(`messageStorageService: opened database`);
   }
 
   async closeAsync() {
-    await this.#db.closeAsync();
+    await this.db.closeAsync();
+    console.log(`messageStorageService: closed database`);
+  }
+
+  async getMessagesAsync() {
+    const messages = await this.db.getAllAsync("SELECT * FROM messages");
+
+    return messages;
+  }
+
+  async addMessageAsync({ phoneNumber, isMine, isRead, content }) {
+    const { lastInsertRowId } = await this.db.runAsync(
+      "INSERT INTO messages (phoneNumber, isMine, isRead, content) VALUES (?, ?, ?, ?)",
+      phoneNumber,
+      isMine,
+      isRead,
+      content
+    );
+    console.log(
+      `messageStorageService: added message (id: ${lastInsertRowId})`
+    );
+
+    this.notifySubs(this.newMessageSubs, {
+      phoneNumber,
+      isMine,
+      isRead,
+      content,
+    });
+
+    return lastInsertRowId;
+  }
+
+  async deleteAllMessages() {
+    await this.db.execAsync("DELETE FROM messages");
+  }
+
+  async getChatPreviewsAsync() {
+    const query = `
+      SELECT MAX(id) AS id, phoneNumber, content AS lastMessage, SUM(CASE WHEN isRead = 0 THEN 1 ELSE 0 END) AS unreadCount
+      FROM messages
+      GROUP BY phoneNumber;`;
+
+    const result = await this.db.getAllAsync(query);
+
+    return result;
+  }
+
+  async getMessagesByPhoneNumberAsync(phoneNumber) {
+    const query = `
+      SELECT *
+      FROM messages
+      WHERE phoneNumber = ?
+    `;
+
+    const result = await this.db.getAllAsync(query, phoneNumber);
+    return result;
+  }
+
+  async markMessagesAsRead(phoneNumber) {
+    console.log("markMessagesAsRead");
+    const query = `
+      UPDATE messages
+      SET isRead = 1
+      WHERE phoneNumber = ?
+    `;
+    await this.db.runAsync(query, phoneNumber);
+    this.notifySubs(this.readStatusSubs);
+  }
+
+  onNewMessage(callback) {
+    this.newMessageSubs.push(callback);
+  }
+
+  onChangeReadStatus(callback) {
+    this.readStatusSubs.push(callback);
+  }
+
+  notifySubs(subs, input) {
+    subs.forEach((sub) => sub(input));
   }
 }
 

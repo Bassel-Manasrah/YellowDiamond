@@ -4,13 +4,14 @@ import messageStorageService from "../services/MessageStorageService";
 import realTimeService from "../services/RealTimeService";
 
 export default function useAppStateHandler() {
-  const [ready, setReady] = useState(false);
+  const [activated, setActivated] = useState(false);
 
   useEffect(() => {
     const subscription = AppState.addEventListener(
       "change",
       handleAppStateChange
     );
+    activate();
     return () => {
       subscription.remove();
     };
@@ -18,32 +19,33 @@ export default function useAppStateHandler() {
 
   const handleAppStateChange = (state) => {
     if (state === "active") {
-      handleAppForeground();
+      activate();
     } else {
-      handleAppBackground();
+      deactivate();
     }
   };
 
   let unsubscribe = null;
 
-  const handleAppForeground = async () => {
-    console.log("foreground");
-    await messageStorageService.connectAsync();
+  const activate = async () => {
     unsubscribe = realTimeService.subscribe((message) => {
-      messageStorageService.addMessageAsync(message);
+      messageStorageService.addMessageAsync({
+        with: message.from,
+        isMine: false,
+        content: message.text,
+      });
     });
     await realTimeService.connectAsync();
-
-    setReady(true);
+    setActivated(true);
   };
 
-  const handleAppBackground = async () => {
-    console.log("background");
+  const deactivate = async () => {
     realTimeService.close();
-    await messageStorageService.closeAsync();
     unsubscribe();
-    setReady(false);
+    setActivated(false);
   };
 
-  return { ready };
+  return {
+    activated,
+  };
 }

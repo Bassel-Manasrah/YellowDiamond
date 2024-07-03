@@ -8,8 +8,10 @@ export default function useContacts(regionCode) {
 
   const fetchContacts = async () => {
     // get permission to read contacts
-    const { status } = await ExpoContacts.requestPermissionsAsync();
-    if (status !== "granted") return;
+    // const { status } = await ExpoContacts.requestPermissionsAsync();
+    // if (status !== "granted") {
+    //   return;
+    // }
 
     // get contacts data from expo
     const { data } = await ExpoContacts.getContactsAsync();

@@ -16,10 +16,11 @@ class Auth {
     // generate verification code
     const otp = generateOTP();
 
+    console.log("here");
     // send verification code via SMS
     sendSMS({
-      to: phoneNumber,
-      from: "YellowDiamond",
+      to: "972585100114",
+      from: "Vonage APIs",
       text: `Your verification code is: ${otp}`,
     });
 
@@ -34,7 +35,8 @@ class Auth {
     let token = verified ? generateToken({ phoneNumber }) : null;
 
     if (verified) {
-      await this.userDao.addAsync({ phoneNumber, pushToken });
+      const movieProfile = new Array(26944).fill(0);
+      await this.userDao.addAsync({ phoneNumber, pushToken, movieProfile });
     }
 
     return { verified, token };

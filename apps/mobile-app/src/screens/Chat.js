@@ -5,49 +5,57 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import InputBox from "../components/InputBox";
 import ChatHeader from "../components/ChatHeader";
 import { StatusBar } from "expo-status-bar";
-import chatService from "../services/ChatService";
 import uuid from "react-native-uuid";
 import { store } from "../utils/store";
+import messageStorageService from "../services/MessageStorageService";
+import realTimeService from "../services/RealTimeService";
 
 export default function Chat({ navigation, route }) {
   const { phoneNumber, name } = route.params;
 
-  const [newMessageText, setNewMessageText] = useState("");
   const [messages, setMessages] = useState([]);
   const [myPhoneNumber, setMyPhoneNumber] = useState(null);
   const flatListRef = useRef();
 
   const fetchMessages = async () => {
-    const fetched = await chatService.getMessagesByPhoneNumberAsync(
+    console.log("phoneNumber", phoneNumber);
+    const fetched = await messageStorageService.getMessagesByPhoneNumberAsync(
       phoneNumber
     );
     setMessages(fetched);
   };
 
   const fetchMyPhoneNumber = async () => {
-    setMyPhoneNumber(await store.get("myPhoneNumber"));
+    fetched = await store.get("myPhoneNumber");
+    console.log(fetched);
+    setMyPhoneNumber(fetched);
   };
 
   useEffect(() => {
+    messageStorageService.markMessagesAsRead(phoneNumber);
     fetchMessages();
     fetchMyPhoneNumber();
-    chatService.onNewMessage(phoneNumber, (message) => {
-      setMessages((messages) => [...messages, { ...message, id: uuid.v4() }]);
+    messageStorageService.onNewMessage((message) => {
+      if (message.phoneNumber === phoneNumber)
+        setMessages((messages) => [...messages, { ...message, id: uuid.v4() }]);
     });
+
+    return () => {
+      messageStorageService.markMessagesAsRead(phoneNumber);
+    };
   }, []);
 
-  const onSend = async () => {
-    await chatService.sendMessageAsync(phoneNumber, newMessageText);
-    setMessages((messages) => [
-      ...messages,
-      {
-        text: newMessageText,
-        sender: myPhoneNumber,
-        reeiver: phoneNumber,
-        id: uuid.v4(),
-      },
-    ]);
-    setNewMessageText("");
+  const onSend = async (messageText) => {
+    // add message to local messages storeage
+    await messageStorageService.addMessageAsync({
+      phoneNumber,
+      isMine: true,
+      isRead: true,
+      content: messageText,
+    });
+
+    // send message to the real time server
+    realTimeService.send({ to: phoneNumber, text: messageText });
   };
 
   return (
@@ -63,7 +71,7 @@ export default function Chat({ navigation, route }) {
       <FlatList
         data={messages}
         renderItem={({ item }) => (
-          <Message text={item.text} mine={item.sender === myPhoneNumber} />
+          <Message text={item.content} mine={item.isMine} />
         )}
         ref={flatListRef}
         onContentSizeChange={() =>
@@ -71,11 +79,7 @@ export default function Chat({ navigation, route }) {
         }
         onLayout={() => flatListRef.current.scrollToEnd({ animated: true })}
       />
-      <InputBox
-        value={newMessageText}
-        onChange={setNewMessageText}
-        onSend={onSend}
-      />
+      <InputBox onSend={onSend} phoneNumber={phoneNumber} />
     </SafeAreaView>
   );
 }

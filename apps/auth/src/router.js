@@ -10,6 +10,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/sendOTP", (req, res) => {
+  console.log("pingo");
   const phoneNumber = req.body.phoneNumber;
   if (phoneNumber) {
     auth.sendOTP(phoneNumber);

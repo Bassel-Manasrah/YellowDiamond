@@ -12,29 +12,23 @@ export default function Contacts({ navigation }) {
   const onContactPress = ({ phoneNumber, name }) => {
     navigation.navigate("chat", { phoneNumber, name });
   };
-
   const fetchRegisteredContacts = async () => {
     const response = await axios.post(
       `http://${process.env.EXPO_PUBLIC_REG_HOSTNAME}/filterRegistered`,
       contacts.map((contact) => contact.phoneNumber)
     );
-
     const registeredPhoneNumbers = response.data;
-
     const updatedContacts = contacts.map((contact) => ({
       ...contact,
       registered: registeredPhoneNumbers.includes(contact.phoneNumber),
     }));
-
     setContacts(updatedContacts);
   };
-
   useEffect(() => {
     if (!loading) {
       fetchRegisteredContacts();
     }
   }, [loading]);
-
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="royalblue" style="light" />

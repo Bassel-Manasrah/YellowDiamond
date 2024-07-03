@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "634665365905",
+    "project_id": "yellow-diamond-ffe53",
+    "storage_bucket": "yellow-diamond-ffe53.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634665365905:android:2ba48a9e933f8e4b6e6a30",
+        "android_client_info": {
+          "package_name": "com.bassel.yellowdiamond"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo86K1X2qc_qVbz_3KuuauBwfT_kSBl6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

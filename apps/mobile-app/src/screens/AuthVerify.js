@@ -14,7 +14,7 @@ export default function AuthVerify({ route, navigation }) {
   const { phoneNumber } = route.params;
 
   const onPress = async () => {
-    navigation.navigate("registerPushNotification", {
+    navigation.navigate("setup", {
       phoneNumber,
       otp,
     });

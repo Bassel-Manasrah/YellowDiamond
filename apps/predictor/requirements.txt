@@ -1,0 +1,8 @@
+Flask
+pymongo
+requests
+scikit-learn
+numpy
+pandas
+joblib
+nltk

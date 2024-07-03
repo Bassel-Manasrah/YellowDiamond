@@ -1,0 +1,42 @@
+version: "3"
+services:
+  message-service:
+    volumes:
+      - ./apps/message-service:/app:ro
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  auth-service:
+    volumes:
+      - ./apps/auth:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  recommendation-service:
+    volumes:
+      - ./apps/recommendation-service:/app:ro
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  realtime:
+    volumes:
+      - ./apps/real-time-server:/app:ro
+      - /app/node_modules
+    command: npm run dev
+
+  registry:
+    volumes:
+      - ./apps/registry:/app:ro
+      - /app/node_modules
+    command: npm run dev
+
+  predictor:
+    volumes:
+      - ./apps/predictor:/app:ro
+    command: flask --app ./index.py run --host=0.0.0.0 --debug --port=3003

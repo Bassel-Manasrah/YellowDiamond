@@ -9,33 +9,56 @@ import axios from "axios";
 import { store } from "../utils/store";
 
 export default function RegisterPushNotifications({ route, navigation }) {
+  return <Text>Hello</Text>;
+
   useEffect(() => {
     const { phoneNumber, otp } = route.params;
 
-    registerForPushNotificationsAsync().then((pushToken) => {
-      const url = `http://${process.env.EXPO_PUBLIC_AUTH_HOSTNAME}/register`;
+    (async () => {
+      const pushToken = await registerForPushNotificationsAsync();
+
+      console.log(`push token: ${pushToken}`);
+
       const payload = {
         phoneNumber,
         otp,
         pushToken,
       };
-      console.log("i am here!");
-      axios
-        .post(url, payload)
-        .then(async (response) => {
-          const { token } = response.data;
-          console.log(token);
-          await store.set("token", token);
-          await store.set("myPhoneNumber", phoneNumber);
-        })
-        .catch((error) => {
-          console.error(error);
-          navigation.navigate("authInit");
-        });
-    });
+      const url = `http://${process.env.EXPO_PUBLIC_AUTH_HOSTNAME}/register`;
+
+      const response = await axios.post(url, payload);
+      const { token } = response.data;
+
+      console.log(`auth token: ${token}`);
+
+      await store.set("myPhoneNumber", phoneNumber);
+      await store.set("token", token);
+    })();
+
+    // registerForPushNotificationsAsync().then((pushToken) => {
+    //   console.log(`pushToken: ${pushToken}`);
+    //   const url = `http://${process.env.EXPO_PUBLIC_AUTH_HOSTNAME}/register`;
+    //   const payload = {
+    //     phoneNumber,
+    //     otp,
+    //     pushToken,
+    //   };
+    //   axios
+    //     .post(url, payload)
+    //     .then(async (response) => {
+    //       const { token } = response.data;
+    //       console.log(`phoneNumber: ${phoneNumber}`);
+    //       await store.set("myPhoneNumber", phoneNumber);
+    //       await store.set("token", token);
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //       navigation.navigate("authInit");
+    //     });
+    // });
   }, []);
 
-  return <SplashScreen />;
+  return <Text>Hello World!</Text>;
 }
 
 async function registerForPushNotificationsAsync() {
@@ -63,9 +86,8 @@ async function registerForPushNotificationsAsync() {
       return;
     }
     token = await Notifications.getExpoPushTokenAsync({
-      projectId: "4ef0672b-6e12-4c80-b57f-88b38fd66a90",
+      projectId: "47cbc978-4641-4f60-8ae8-b9f7f23efc05",
     });
-    console.log(token);
   } else {
     alert("Must use physical device for Push Notifications");
   }

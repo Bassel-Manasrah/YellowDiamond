@@ -2,10 +2,32 @@ version: "3"
 services:
   users_db:
     image: mongo:7.0
+    ports:
+      - "27017:27017"
+
+  message-service:
+    build: ./apps/message-service
+    ports:
+      - "8888:8888"
+    environment:
+      - PORT=8888
+      - USERS_DB_URI=mongodb://users_db:27017
+      - USERS_DB_NAME=usersDB
+
+  auth-service:
+    build: ./apps/auth
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - SECRET_KEY=shhhhh
+      - USERS_DB_URI=mongodb://users_db:27017
+      - USERS_DB_NAME=usersDB
+      - API_KEY=af381996
+      - API_SECRET=3mr8Vrrm9F5YxpII
 
   realtime:
-    build:
-      context: ./apps/real-time-server
+    build: ./apps/real-time-server
     ports:
       - "3000:3000"
     environment:
@@ -14,8 +36,7 @@ services:
       - USERS_DB_NAME=usersDB
 
   registry:
-    build:
-      context: ./apps/registry/
+    build: ./apps/registry/
     ports:
       - "4000:4000"
     environment:
@@ -23,13 +44,22 @@ services:
       - USERS_DB_URI=mongodb://users_db:27017
       - USERS_DB_NAME=usersDB
 
-  auth:
+  recommendation-service:
+    restart: always
     build:
-      context: ./apps/auth
+      context: ./apps/recommendation-service/
     ports:
-      - "5000:5000"
+      - "3001:3001"
     environment:
-      - PORT=5000
-      - SECRET_KEY=shhhhh
+      - PORT=3001
+
+  predictor:
+    restart: always
+    build:
+      context: ./apps/predictor/
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
       - USERS_DB_URI=mongodb://users_db:27017
       - USERS_DB_NAME=usersDB

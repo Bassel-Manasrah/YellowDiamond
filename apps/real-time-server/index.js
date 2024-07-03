@@ -1,4 +1,6 @@
 import { WebSocketServer } from "ws";
+import fetchPushToken from "./utils/fetchPushToken.js";
+import pushDataNotification from "./utils/pushDataNotification.js";
 
 const wss = new WebSocketServer({ port: process.env.PORT });
 
@@ -19,20 +21,38 @@ wss.on("connection", (ws, request) => {
 
   ws.on("close", () => {
     clients.delete(ws.phoneNumber);
+    console.log(`${phoneNumber} disconnected`);
   });
 
-  ws.on("message", (message) => {
+  ws.on("message", async (message) => {
     console.log(`received message from ${ws.phoneNumber}`);
     // parese the message
     const { to, text } = JSON.parse(message);
 
     if (!to || !text) return;
 
-    // Check if the phone number 'to' exists
+    const messageToSend = {
+      phoneNumber: ws.phoneNumber,
+      isMine: false,
+      isRead: false,
+      content: text,
+    };
+
+    // Check if the phone number 'to' is connected
     if (clients.has(to)) {
-      // if it does, send the message to it
+      // if it is, send the message via web socket
+      console.log(`sending message from ${to}`);
+
       const dest = clients.get(to);
-      dest.send(JSON.stringify({ sender: ws.phoneNumber, receiver: to, text }));
+      dest.send(JSON.stringify(messageToSend));
+    } else {
+      // if it is not, send the message to it via push token
+      const pushToken = await fetchPushToken(to);
+
+      if (!pushToken) return;
+
+      console.log(`pushToken: ${pushToken}`);
+      await pushDataNotification(pushToken, messageToSend);
     }
   });
 });

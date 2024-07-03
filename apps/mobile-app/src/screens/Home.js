@@ -1,36 +1,53 @@
-import { Text, StyleSheet } from "react-native";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Text, StyleSheet, FlatList, View } from "react-native";
+import React, { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FAB from "../components/FAB";
 import { StatusBar } from "expo-status-bar";
+import useChatPreviews from "../hooks/useChatPreviews";
+import ChatPreview from "../components/ChatPreview";
+import SplashScreen from "./SplashScreen";
+import contactService from "../services/ContactService";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home({ navigation }) {
+  const { chatPreviews, loading } = useChatPreviews();
   const onFloatingButtonPress = () => {
-    navigation.navigate("contacts");
+    navigation.navigate("pick");
   };
-
   const floatingButtonIcon = (
     <Ionicons name="person-add" size={32} color="white" />
   );
-
+  if (loading) return <SplashScreen />;
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar backgroundColor="royalblue" style="light" />
-      <Text>Home</Text>
+      <FlatList
+        data={chatPreviews}
+        renderItem={({ item }) => (
+          <ChatPreview
+            name={item.name}
+            lastMessage={item.lastMessage}
+            unreadCount={item.unreadCount}
+            onPress={() => {
+              navigation.navigate("chat", {
+                phoneNumber: item.phoneNumber,
+                name: item.name,
+              });
+            }}
+          />
+        )}
+      />
       <FAB
         color="#075eec"
         icon={floatingButtonIcon}
         onPress={onFloatingButtonPress}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
