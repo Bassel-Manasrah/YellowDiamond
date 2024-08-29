@@ -40,7 +40,9 @@ export default function Contacts({ navigation }) {
             <Contact
               name={item.name}
               registered={item.registered}
-              onPress={() => onContactPress(item)}
+              onPress={() => {
+                if (item.registered) onContactPress(item);
+              }}
             />
           )}
         />

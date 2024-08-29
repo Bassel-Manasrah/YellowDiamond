@@ -30,6 +30,19 @@ def fetch_movie(movie_id):
         print(f"Error fetching movie data: {e}")
     return None
 
+def fetch_song_vector(song_id):
+    url = f"http://recommendation-service:3001/songAudioFeatures/{song_id}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        song = response.json()
+        song = list(song.values())
+        print(song)
+        return song
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching movie data: {e}")
+    return None
+
 def update_user_vector(user, media_type, new_vector):
 
     updated_user = copy(user)

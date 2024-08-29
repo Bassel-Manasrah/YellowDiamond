@@ -13,5 +13,7 @@ def user_likes_media(user_vector, media_vector):
     return cosine_similarity(user_vector, media_vector) > 0
 
 def cosine_similarity(a, b):
+    if(norm(a) * norm(b) == 0):
+        return 1;
     similarity = dot(a, b) / (norm(a) * norm(b))
     return float(similarity)

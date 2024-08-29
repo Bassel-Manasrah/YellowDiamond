@@ -28,17 +28,20 @@ export default function PickContactsScreen({ navigation, route }) {
     (async () => {
       let fetched = await contactService.fetchRegisteredContactsAsync();
 
-      // const url = `http://${process.env.EXPO_PUBLIC_PREDICT_HOSTNAME}/predict`;
-      // const data = {
-      //   phoneNumbers: fetched.map((contact) => contact.phoneNumber),
-      //   movieId: recommendation.id,
-      //   movieType: "movie",
-      // };
+      // ----------------------------------------
+      const url = `http://${process.env.EXPO_PUBLIC_PREDICT_HOSTNAME}/predict`;
+      const data = {
+        phoneNumbers: fetched.map((contact) => contact.phoneNumber),
+        mediaId: recommendation.id,
+        mediaType: recommendation.type,
+      };
 
-      // const { data: predicitons } = await axios.post(url, data);
-      // console.log("Predictions:", predicitons);
+      const { data: predicitons } = await axios.post(url, data);
+      console.log("Predictions:", predicitons);
 
-      // fetched = joinLists(fetched, predicitons);
+      fetched = joinLists(fetched, predicitons);
+      // ----------------------------------------
+
       setContacts(fetched.map((item) => ({ ...item, prediciton: false })));
     })();
   }, []);

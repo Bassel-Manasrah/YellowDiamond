@@ -26,8 +26,8 @@ export default function InputBox({ onSend, phoneNumber }) {
   const handleSubmit = () => {
     if (value != "") {
       onSend(value);
-      setValue("");
       setSelectedSuggestion(null);
+      setValue("");
     }
   };
 
@@ -83,25 +83,32 @@ export default function InputBox({ onSend, phoneNumber }) {
           "selected suggestion -> predict",
           !selectSuggestion.prediction
         );
-        // const url = `http://${process.env.EXPO_PUBLIC_PREDICT_HOSTNAME}/predict`;
-        // const data = {
-        //   phoneNumbers: [phoneNumber],
-        //   movieId: selectedSuggestion.id,
-        //   movieType: "movie",
-        // };
-        // const { data: predictions } = await axios.post(url, data);
 
-        // console.log("Predictions:", predictions);
+        // ----------------------------------------
 
-        // setSelectedSuggestion({
-        //   ...selectedSuggestion,
-        //   prediction: predictions[0].prediction,
-        // });
+        try {
+          const url = `http://${process.env.EXPO_PUBLIC_PREDICT_HOSTNAME}/predict`;
+          const data = {
+            phoneNumbers: [phoneNumber],
+            mediaId: selectedSuggestion.id,
+            mediaType: selectedSuggestion.type,
+          };
+          const { data: predictions } = await axios.post(url, data);
 
-        setSelectedSuggestion({
-          ...selectedSuggestion,
-          prediction: true,
-        });
+          console.log("Predictions:", predictions);
+
+          setSelectedSuggestion({
+            ...selectedSuggestion,
+            prediction: predictions[0].prediction,
+          });
+        } catch (e) {
+          setSelectedSuggestion({
+            ...selectedSuggestion,
+            prediction: true,
+          });
+        }
+
+        // ----------------------------------------
       }
     })();
   }, [selectedSuggestion]);

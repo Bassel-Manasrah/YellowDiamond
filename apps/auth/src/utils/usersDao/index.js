@@ -6,7 +6,7 @@ class userDao {
     this.uri = uri;
     this.dbName = dbName;
   }
-  async addAsync({ phoneNumber, pushToken }) {
+  async addAsync({ phoneNumber, pushToken, movieProfile, songProfile }) {
     return await handleErrorsAsync(async () => {
       // connect to database
       const { collection, closeAsync } = await connectAsync(
@@ -18,6 +18,8 @@ class userDao {
       const { insertedId } = await collection.insertOne({
         phoneNumber,
         pushToken,
+        movieProfile,
+        songProfile,
       });
 
       // close connection

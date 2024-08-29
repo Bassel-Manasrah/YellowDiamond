@@ -1,14 +1,25 @@
+import { store } from "../utils/store";
+import forge from "node-forge";
+
 class RealTimeService {
   #subscribers = [];
   #ws;
   #connected = false;
+  #token = null;
 
   async connectAsync(phoneNumber) {
     if (this.#connected) return true;
 
+    if (!this.#token) {
+      this.#token = await store.get("token");
+    }
+
     return new Promise(async (resolve, reject) => {
+      const encodedPhoneNumber = encodeURIComponent(phoneNumber);
+      const encodedToken = encodeURIComponent(this.#token);
+      console.log(`---------------- token: ${encodedToken}`);
       this.#ws = new WebSocket(
-        `ws://${process.env.EXPO_PUBLIC_REALTIME_HOSTNAME}/${phoneNumber}`
+        `ws://${process.env.EXPO_PUBLIC_REALTIME_HOSTNAME}?phoneNumber=${encodedPhoneNumber}&token=${encodedToken}`
       );
       this.#ws.onmessage = (e) => this.#receive(e.data);
       this.#ws.onopen = () => {
@@ -28,12 +39,19 @@ class RealTimeService {
     });
   }
   #receive(message) {
-    console.log(`realTimeService: received message ${message}`);
+    console.log(`received message: ${message}`);
+
     message = JSON.parse(message);
+
+    console.log(`parsed message: ${message}`);
+
     this.#subscribers.forEach((subscriber) => subscriber(message));
   }
   send(message) {
-    message = JSON.stringify(message);
+    message = JSON.stringify({
+      ...message,
+      token: encodeURIComponent(this.#token),
+    });
     if (!this.#connected) return false;
     this.#ws.send(message);
     return true;

@@ -12,8 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.3",
     "expo-server-sdk": "^3.10.0",
-    "mongodb": "^6.6.1",
+    "mongodb": "^6.8.0",
+    "node-forge": "^0.7.5",
     "ws": "^8.16.0"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@ import sendSMS from "./utils/sendSMS.js";
 import generateOTP from "./utils/generateOTP.js";
 import generateToken from "./utils/generateToken.js";
 import userDao from "./utils/usersDao/index.js";
+import validate from "./utils/validate.js";
 
 class Auth {
   constructor() {
@@ -16,10 +17,9 @@ class Auth {
     // generate verification code
     const otp = generateOTP();
 
-    console.log("here");
     // send verification code via SMS
     sendSMS({
-      to: "972585100114",
+      to: phoneNumber,
       from: "Vonage APIs",
       text: `Your verification code is: ${otp}`,
     });
@@ -36,10 +36,20 @@ class Auth {
 
     if (verified) {
       const movieProfile = new Array(26944).fill(0);
-      await this.userDao.addAsync({ phoneNumber, pushToken, movieProfile });
+      const songProfile = new Array(13).fill(0);
+      await this.userDao.addAsync({
+        phoneNumber,
+        pushToken,
+        movieProfile,
+        songProfile,
+      });
     }
 
     return { verified, token };
+  }
+
+  validate(token, phoneNumber) {
+    return validate(token, phoneNumber);
   }
 }
 

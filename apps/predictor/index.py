@@ -1,34 +1,24 @@
 from flask import Flask, request, jsonify
-from db import fetch_media, fetch_users, update_user_vector
+from db import fetch_media, fetch_users, update_user_vector, fetch_song_vector
 from utils import state_to_num, user_likes_media
-from vectorize import vectorize_media, vectorize_user, vectorize_movie
+from vectorize import vectorize_media, vectorize_user, vectorize_movie, fetch_media_vector
 from db import collection
 
 app = Flask(__name__)
 
-@app.route("/")
-def hi():
-    pass
-    # user = fetch_users(['+972524814835'])[0]
-    # print(type(user))
-    # return "done"
-    
-    # movie_id = 346698
-    # movie = fetch_movie(movie_id)
-    # vector = vectorize_movie(movie)
-    # return jsonify(vector)
+# @app.route("/")
+# def fetchMediaVector():
+#     media_id = "2qxmye6gAegTMjLKEBoR3d"
+#     media_type = "song"
+#     # media_id = "550"
+#     # media_type = "movie"
+#     media_vector = fetch_media_vector(media_id, media_type);
+#     return media_vector
 
-    # collection.insert_one({
-    #     "phoneNumber": "+972524814835",
-    #     "movieProfile": [0] * 26944,
-    # })
-
-    # collection.insert_one({
-    #     "phoneNumber": "+972524814836",
-    #     "movieProfile": [0] * 26944,
-    # })
-
-    # return "done"
+@app.route("/songVector/<string:song_id>")
+def getSongVector(song_id: str):
+    song = fetch_song_vector(song_id)
+    return jsonify(song)
 
 @app.route("/movieVector/<int:movie_id>")
 def getMovieVector(movie_id):
@@ -40,7 +30,7 @@ def getMovieVector(movie_id):
 
 @app.route("/feedback", methods=['POST'])
 def feedback():
-    data = request.json
+    data = request.get_json()
     phone_number = data.get('phoneNumber')
     media_id = data.get('mediaId')
     media_type = data.get('mediaType')
@@ -51,12 +41,10 @@ def feedback():
     new_state = state_to_num(new_state)
     multiplier = new_state - prev_state
 
-    # fetch media and user objects
-    media = fetch_media(media_id)
+    media_vector = fetch_media_vector(media_id, media_type)
+
     user = fetch_users([phone_number])[0]
 
-    # vectoize media and user objects
-    media_vector = vectorize_media(media)
     user_vector = vectorize_user(user, media_type)
 
     # update user media profile
@@ -75,9 +63,9 @@ def predict():
         return jsonify({'error': 'Invalid input'}), 400
     
     users = fetch_users(phone_numbers)
-    media = fetch_media(media_id, media_type)
+    media_vector = fetch_media_vector(media_id, media_type)
 
-    media_vector = vectorize_media(media)
+    # media_vector = vectorize_media(media)
     predictions = []
     for user in users:
         user_vector = vectorize_user(user, media_type)
@@ -87,3 +75,7 @@ def predict():
         })
     return jsonify(predictions)
 
+
+@app.route("/feedbackl", methods=['POST'])
+def feedbackl():
+    pass

@@ -23,8 +23,8 @@ services:
       - SECRET_KEY=shhhhh
       - USERS_DB_URI=mongodb://users_db:27017
       - USERS_DB_NAME=usersDB
-      - API_KEY=af381996
-      - API_SECRET=3mr8Vrrm9F5YxpII
+      - API_KEY=77678f58
+      - API_SECRET=6sdhTxrGxyATDEXP
 
   realtime:
     build: ./apps/real-time-server
@@ -34,6 +34,7 @@ services:
       - PORT=3000
       - USERS_DB_URI=mongodb://users_db:27017
       - USERS_DB_NAME=usersDB
+      - AUTH_SERVICE_URI=http://auth-service:5000
 
   registry:
     build: ./apps/registry/

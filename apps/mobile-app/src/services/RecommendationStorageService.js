@@ -15,12 +15,12 @@ class RecommendationStorageService {
 
     this.movieDB = await SQLite.openDatabaseAsync("movies");
     await this.movieDB.execAsync(
-      "CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY, name TEXT, year INTEGER, imgUrl TEXT, actionUrl TEXT, overview TEXT, popularity INTEGER)"
+      "CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY, name TEXT, year INTEGER, imgUrl TEXT, actionUrl TEXT, overview TEXT, popularity INTEGER, feedback INTEGER DEFAULT 0)"
     );
 
     this.songDB = await SQLite.openDatabaseAsync("songs");
     await this.songDB.execAsync(
-      "CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY, name TEXT, year INTEGER, imgUrl TEXT, artist TEXT, previewUrl TEXT, actionUrl TEXT, popularity INTEGER)"
+      "CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY, name TEXT, year INTEGER, imgUrl TEXT, artist TEXT, previewUrl TEXT, actionUrl TEXT, popularity INTEGER, feedback INTEGER DEFAULT 0)"
     );
 
     console.log(`RecommendationStorageService: opened database`);
@@ -83,6 +83,33 @@ class RecommendationStorageService {
     );
 
     return lastInsertRowId;
+  }
+
+  async updateFeedbackAsync(id, feedback) {
+    const query = `
+      UPDATE items
+      SET feedback = ?
+      WHERE id = ?
+    `;
+
+    // Try to update feedback in the movieDB
+    let { changes } = await this.movieDB.runAsync(query, feedback, id);
+
+    // If no changes were made, try updating in the songDB
+    if (changes === 0) {
+      const result = await this.songDB.runAsync(query, feedback, id);
+      changes = result.changes;
+    }
+
+    if (changes > 0) {
+      console.log(
+        `Feedback for recommendation (id: ${id}) updated to ${feedback}`
+      );
+      return true;
+    } else {
+      console.warn(`No recommendation found with id: ${id}`);
+      return false;
+    }
   }
 
   // async addRecommendationAsync(recommendation, type) {

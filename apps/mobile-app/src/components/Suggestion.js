@@ -12,11 +12,12 @@ import { useEffect, useRef, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import recommendationStorageService from "../services/RecommendationStorageService";
 
 const FEEDBACK = {
-  LIKE: "like",
-  DISLIKE: "dislike",
-  NEUTRAL: "no_feedback",
+  LIKE: 1,
+  DISLIKE: -1,
+  NEUTRAL: 0,
 };
 
 export default function Suggestion({
@@ -30,7 +31,7 @@ export default function Suggestion({
 }) {
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [feedback, setFeedback] = useState(FEEDBACK.NEUTRAL);
+  const [feedback, setFeedback] = useState(suggestion.feedback);
 
   const loadSound = async () => {
     const { sound: NewSound } = await Audio.Sound.createAsync(
@@ -44,12 +45,12 @@ export default function Suggestion({
   };
 
   useEffect(() => {
-    if (suggestion.type === "song" && suggestion.previewUrl) loadSound();
+    if (suggestion.previewUrl) loadSound();
   }, []);
 
   const onLongPress = async () => {
     console.log(suggestion);
-    if (suggestion.type === "song" && sound) {
+    if (sound) {
       sound.playAsync();
       setIsPlaying(true);
       console.log("long pressed a song!");
@@ -78,7 +79,13 @@ export default function Suggestion({
     let likeComponent = (
       <TouchableOpacity
         style={styles.likeContainer}
-        onPress={() => setFeedback(FEEDBACK.LIKE)}
+        onPress={() => {
+          setFeedback(FEEDBACK.LIKE);
+          recommendationStorageService.updateFeedbackAsync(
+            suggestion.id,
+            FEEDBACK.LIKE
+          );
+        }}
       >
         <AntDesign name="like2" size={24} color="#44ba5d" />
       </TouchableOpacity>
@@ -87,7 +94,13 @@ export default function Suggestion({
     let dislikeComponent = (
       <TouchableOpacity
         style={styles.dislikeContainer}
-        onPress={() => setFeedback(FEEDBACK.DISLIKE)}
+        onPress={() => {
+          setFeedback(FEEDBACK.DISLIKE);
+          recommendationStorageService.updateFeedbackAsync(
+            suggestion.id,
+            FEEDBACK.DISLIKE
+          );
+        }}
       >
         <AntDesign name="dislike2" size={24} color="#F61067" />
       </TouchableOpacity>
@@ -186,8 +199,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   img: {
+    height: 80,
     width: 60,
-    height: "100%",
+    // height: "100%",
   },
   title: {
     flex: 1,

@@ -6,17 +6,7 @@ import realTimeService from "../services/RealTimeService";
 export default function useRealTimeMessaging(phoneNumber) {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", async (state) => {
-      state === "active" ? await activate() : await deactivate();
-    });
-    activate();
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  let cleanup = null;
+  console.log(`useRealTimeMessaging: ${phoneNumber}`);
 
   const activate = async () => {
     console.log("useRealTimeMessaging: activating");
@@ -34,6 +24,23 @@ export default function useRealTimeMessaging(phoneNumber) {
     await messageStorageService.closeAsync();
     cleanup();
   };
+
+  useEffect(() => {
+    if (phoneNumber != null) {
+      const subscription = AppState.addEventListener(
+        "change",
+        async (state) => {
+          state === "active" ? await activate() : await deactivate();
+        }
+      );
+      activate();
+      return () => {
+        subscription.remove();
+      };
+    }
+  }, [phoneNumber]);
+
+  let cleanup = null;
 
   return { loading };
 }

@@ -3,6 +3,9 @@ from preprocess import preprocess
 import numpy as np
 
 # load movie vectorizer
+from db import fetch_media, fetch_song_vector
+
+
 movie_vectorizer = joblib.load('movie_vectorizer.pkl')
 
 def vectorize_media(media):
@@ -26,3 +29,14 @@ def vectorize_user(user, media_type):
         return np.array(user['movieProfile'])
     else:
         return np.array(user['songProfile'])
+    
+
+def fetch_media_vector(media_id, media_type):
+    if(media_type == 'movie'):
+        movie = fetch_media(media_id)
+        movie_vector = vectorize_movie(movie)
+        movie_vector_list = movie_vector.flatten().tolist()
+        return movie_vector_list
+    else:
+        song = fetch_song_vector(media_id)
+        return song

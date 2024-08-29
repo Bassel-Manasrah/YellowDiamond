@@ -44,7 +44,11 @@ export default function SearchScreen({ navigation, route }) {
             onChangeText={setQuery}
           />
         </View>
-        <TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.navigate("home");
+          }}
+        >
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableWithoutFeedback>
       </View>
@@ -54,7 +58,7 @@ export default function SearchScreen({ navigation, route }) {
         renderItem={({ item }) => (
           <View
             style={[
-              { height: 80 },
+              { height: 80, marginTop: 16 },
               selected?.id === item.id && styles.selected,
             ]}
           >

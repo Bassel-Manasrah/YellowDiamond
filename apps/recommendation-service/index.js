@@ -29,7 +29,6 @@ app.get("/", async (req, res) => {
 app.get("/movie/:id", async (req, res) => {
   const id = req.params.id;
   const includeTags = req.query.tags ? parseBoolean(req.query.tags) : false;
-
   const movie = await moviesApiWrapper.getMovieByIdAsync(id, includeTags);
   console.log("movie", movie);
   res.json(movie);
@@ -62,33 +61,49 @@ const parseBoolean = (booleanString) => {
 };
 
 app.get("/search", async (req, res) => {
-  const name = req.query.name;
-  const limit = req.query.limit ? parseInt(req.query.limit) : 10;
-  const obvious = req.query.obvious ? parseBoolean(req.query.obvious) : true;
-  const type = req.query.type || "all";
+  const search = async () => {
+    const name = req.query.name;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    const obvious = req.query.obvious ? parseBoolean(req.query.obvious) : true;
+    const type = req.query.type || "all";
 
-  if (!name) return res.sendStatus(400);
+    if (!name) return res.sendStatus(400);
 
-  let recoms = [];
+    let recoms = [];
 
-  if (type === "all" || type === "movie") {
-    const movies = await moviesApiWrapper.findAsync(name, 10);
-    if (movies) recoms.push(...movies);
+    if (type === "all" || type === "movie") {
+      const movies = await moviesApiWrapper.findAsync(name, 10);
+      if (movies) recoms.push(...movies);
+    }
+
+    if (type === "all" || type === "song") {
+      const songs = await songsApiWrapper.findAsync(name, 10);
+      if (songs) recoms.push(...songs);
+    }
+
+    recoms = recoms.sort((a, b) => b.popularity - a.popularity);
+    recoms = recoms.slice(0, limit);
+
+    if (obvious) recoms = pickObvious(recoms);
+
+    res.json(recoms);
+    return true;
+  };
+
+  while (1) {
+    try {
+      const success = await search();
+      if (success) return;
+    } catch (e) {
+      continue;
+    }
   }
-
-  // if (type === "all" || type === "song") {
-  //   const songs = await songsApiWrapper.findAsync(name, 10);
-  //   if (songs) recoms.push(...songs);
-  // }
-
-  recoms = recoms.sort((a, b) => b.popularity - a.popularity);
-  recoms = recoms.slice(0, limit);
-
-  if (obvious) recoms = pickObvious(recoms);
-
-  res.json(recoms);
 });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+});
+
+app.get("/mediaVector/:id", async (req, res) => {
+  const id = req.params.id;
 });

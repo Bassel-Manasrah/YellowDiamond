@@ -16,20 +16,20 @@ export default function ChatPreview({
   const uri =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZiwJCHgq3aS6uqBsM9jXnZfzivlNkahN_zNz4ZOpETg&s";
 
+  const lastMessageStyle = [];
+  if (lastMessage === "* recommendation *")
+    lastMessageStyle.push(styles.lastMessageRecommendation);
+  else if (unreadCount > 0)
+    lastMessageStyle.push(styles.lastMessageHighlighted);
+  else lastMessageStyle.push(styles.lastMessage);
+
   return (
     <TouchableNativeFeedback onPress={onPress}>
       <View style={styles.container}>
         <Image source={{ uri }} style={styles.img} />
         <View style={styles.subContainer}>
           <Text>{name}</Text>
-          <Text
-            style={
-              unreadCount > 0
-                ? styles.lastMessageHighlighted
-                : styles.lastMessage
-            }
-            numberOfLines={1}
-          >
+          <Text style={lastMessageStyle} numberOfLines={1}>
             {lastMessage}
           </Text>
         </View>
@@ -62,6 +62,10 @@ const styles = StyleSheet.create({
   },
   lastMessageHighlighted: {
     color: "royalblue",
+    fontWeight: "bold",
+  },
+  lastMessageRecommendation: {
+    color: "#fcdb03",
     fontWeight: "bold",
   },
   NumberBadgeContainer: {

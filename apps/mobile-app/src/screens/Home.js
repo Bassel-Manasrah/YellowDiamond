@@ -12,7 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Home({ navigation }) {
   const { chatPreviews, loading } = useChatPreviews();
   const onFloatingButtonPress = () => {
-    navigation.navigate("pick");
+    // navigation.navigate("pick");
+    navigation.navigate("contacts");
   };
   const floatingButtonIcon = (
     <Ionicons name="person-add" size={32} color="white" />

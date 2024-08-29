@@ -5,10 +5,20 @@ const expo = new Expo({
 });
 
 export default async function pushDataNotification(pushToken, data) {
-  await expo.sendPushNotificationsAsync([
-    {
-      to: pushToken,
-      data,
-    },
-  ]);
+  console.log({
+    to: pushToken,
+    data,
+  });
+  try {
+    const result = await expo.sendPushNotificationsAsync([
+      {
+        title: "You have a new message!",
+        to: pushToken,
+        data,
+      },
+    ]);
+    console.log(result);
+  } catch (error) {
+    console.error("Error sending push notification:", error);
+  }
 }

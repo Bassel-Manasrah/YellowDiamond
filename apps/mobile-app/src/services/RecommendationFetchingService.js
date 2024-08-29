@@ -18,6 +18,7 @@ class RecommendationsFetchingService {
   }
 
   async fetchAsync(content) {
+    console.log("fetchAsync");
     const id = content.split("/")[1];
 
     // check if it is already exists in the local storage
@@ -32,6 +33,13 @@ class RecommendationsFetchingService {
       const { data } = await axios.get(
         `http://${process.env.EXPO_PUBLIC_RECOMMENDATION_HOSTNAME}/recommendation/${id}`
       );
+
+      if (data.hasOwnProperty("genres")) {
+        delete data.genres;
+      }
+
+      console.log(`adding ${data.name} to storage, ${recom}`);
+
       await recommendationStorageService.addRecommendationAsync(data);
       return data;
     } catch (error) {

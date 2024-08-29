@@ -24,6 +24,7 @@ export default function Message({ text, mine }) {
   };
 
   const fetchSuggestion = async () => {
+    console.log("Message call fetchAsync");
     const fetched = await recommendationsFetchingService.fetchAsync(text);
     setSuggestion(fetched);
   };
@@ -59,14 +60,14 @@ export default function Message({ text, mine }) {
     <View style={containerStyle}>
       {suggestion ? (
         <>
-          <View style={[{ width: 300 }, dynamicHeightStyle]}>
+          <View style={[{ width: 300 }]}>
             <Suggestion
               suggestion={suggestion}
               showOverview={true}
               onPress={() => {
                 openUrl(suggestion.actionUrl);
               }}
-              showFeedback={true}
+              showFeedback={!mine}
             />
           </View>
         </>

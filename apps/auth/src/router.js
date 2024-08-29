@@ -29,4 +29,13 @@ router.post("/register", async (req, res) => {
   verified ? res.status(200).send({ token }) : res.sendStatus(401);
 });
 
+router.post("/validateToken", async (req, res) => {
+  const phoneNumber = req.body.phoneNumber;
+  const token = req.body.token;
+
+  const isValid = auth.validate(token, phoneNumber);
+  console.log(`isValid: ${isValid}`);
+  isValid ? res.sendStatus(200) : res.sendStatus(401);
+});
+
 export default router;

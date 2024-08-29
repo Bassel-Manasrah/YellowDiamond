@@ -67,6 +67,16 @@ class MoviesApiWrapper {
     return movie;
   }
 
+  async getMovieVector(id) {
+    const movie = this.findByIdAsync(id);
+    movie["genres"] = " ".join(movie["genres"]);
+    movie["tags"] = " ".join(movie["tags"]);
+    movie["dump"] =
+      movie["genres"] + " " + movie["tags"] + " " + movie["overview"];
+    movie["dump"] = preprocess(movie["dump"]);
+    return movie_vectorizer.transform([movie["dump"]]).toarray();
+  }
+
   isMovieId(id) {
     return /^\d+$/.test(id);
   }
